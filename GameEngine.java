@@ -6,6 +6,7 @@ public class GameEngine {
 	private int playerCol;
 	private int exitRow;
 	private int exitCol;
+	private boolean playerWon;
 
 	// Cell Type Constants
 	private static final int FLOOR = 0;
@@ -17,16 +18,13 @@ public class GameEngine {
 
 	public GameEngine(Board board) {
 		this.board = board;
+		this.playerWon = false;
 		findPlayer();
 		findExit();
 	}
 
 	public boolean playerWins() {
-		if(playerRow == exitRow)
-			if(playerCol == exitCol)
-				return true;
-				
-		return false;
+		return playerWon;
 	}
 
 	private void findPlayer() {
@@ -59,15 +57,17 @@ public class GameEngine {
 	 * @param dRow Change in row (-1, 0, 1)
 	 * @param dCol Change in column (-1, 0, 1)
 	 */
-	public void movePlayer(int dRow, int dCol) {
+	public boolean movePlayer(int dRow, int dCol) {
 		int targetRow = playerRow + dRow;
 		int targetCol = playerCol + dCol;
 		int targetCell = board.getCell(targetRow, targetCol);
 
 		// Check for Walls or Out of Bounds
 		if (targetCell == WALL || targetCell == -1) {
-			return; // Movement blocked
+			return false; // Movement blocked
 		}
+		boolean collectedCoin = (targetCell == COIN);
+		playerWon = (targetCell == EXIT);
 
 		// Move the Player
 		// Current position becomes Floor (or Goal if player was standing on one)
@@ -79,5 +79,6 @@ public class GameEngine {
 		playerCol = targetCol;
 		board.setCell(playerRow, playerCol, PLAYER);
 
+		return collectedCoin;
 	}
 }
