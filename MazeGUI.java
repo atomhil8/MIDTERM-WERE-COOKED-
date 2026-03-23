@@ -62,7 +62,7 @@ public class MazeGUI extends JFrame {
 
 					// Optional: Disable engine to prevent movement after win
 					engine = null;
-					resetItem.setEnabled(false);
+					resetItem.setEnabled(true);
 				}
 			}
 		});
