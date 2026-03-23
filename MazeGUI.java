@@ -14,6 +14,7 @@ public class MazeGUI extends JFrame {
 	private InfoPanel infoPanel;
 	private JMenuItem resetItem;
 	private int stepCounter;
+	private int coinCounter;
 
 	public MazeGUI() {
 		setTitle("16-Bit Maze");
@@ -41,13 +42,17 @@ public class MazeGUI extends JFrame {
 					case KeyEvent.VK_LEFT -> engine.movePlayer(0, -1);
 					case KeyEvent.VK_RIGHT -> engine.movePlayer(0, 1);
 				}
+				stepCounter++; 
+				infoPanel.setInfoSteps(stepCounter);
+				
 				gamePanel.repaint();
 
 				// Check for victory
 				if (engine.playerWins()) {
+					int points = stepCounter * -1 + coinCounter * 5;
 					JOptionPane.showMessageDialog(MazeGUI.this,
 							"Congratulations! You found the exit.\nYour got "
-									+ infoPanel.getInfoSteps() * 1 + infoPanel.getInfoCoins()
+									+ points
 									+ "points",
 							"Level Complete", JOptionPane.INFORMATION_MESSAGE);
 
@@ -88,7 +93,6 @@ public class MazeGUI extends JFrame {
 			originalBoard = loader.load(selectedFile.getAbsolutePath());
 			currentBoard = originalBoard.clone();
 			engine = new GameEngine(currentBoard);
-
 			resetItem.setEnabled(true);
 			gamePanel.setBoard(currentBoard);
 			gamePanel.repaint();
@@ -96,6 +100,10 @@ public class MazeGUI extends JFrame {
 	}
 
 	private void resetGame() {
+		stepCounter = 0; 
+		infoPanel.setInfoSteps(stepCounter);
+		coinCounter = 0; 
+		infoPanel.setInfoCoins(coinCounter);
 		if (originalBoard != null) {
 			currentBoard = originalBoard.clone();
 			engine = new GameEngine(currentBoard);
