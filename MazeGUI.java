@@ -13,7 +13,7 @@ public class MazeGUI extends JFrame {
 	private GamePanel gamePanel;
 	private InfoPanel infoPanel;
 	private JMenuItem resetItem;
-	private StepCounter stepCounter;
+	private int stepCounter;
 	private CoinCounter coinCounter;
 
 	public MazeGUI() {
@@ -35,7 +35,7 @@ public class MazeGUI extends JFrame {
 			public void keyPressed(KeyEvent e) {
 				if (engine == null)
 					return;
-
+				boolean collectedCoin = false;
 				switch (e.getKeyCode()) {
 					case KeyEvent.VK_UP -> engine.movePlayer(-1, 0);
 					case KeyEvent.VK_DOWN -> engine.movePlayer(1, 0);
@@ -44,12 +44,16 @@ public class MazeGUI extends JFrame {
 				}
 				stepCounter++; 
 				infoPanel.setInfoSteps(stepCounter);
+				if (collectedCoin) {
+    				coinCounter++;
+    				infoPanel.setInfoCoins(coinCounter);
+				}
 				
 				gamePanel.repaint();
 
 				// Check for victory
 				if (engine.playerWins()) {
-					int points = stepCounter * -1 + coinCounter * 5;
+					int points = stepCounter * -1 + coinCounter.getCoins() * 5;
 					JOptionPane.showMessageDialog(MazeGUI.this,
 							"Congratulations! You found the exit.\nYour got "
 									+ points
@@ -93,6 +97,10 @@ public class MazeGUI extends JFrame {
 			originalBoard = loader.load(selectedFile.getAbsolutePath());
 			currentBoard = originalBoard.clone();
 			engine = new GameEngine(currentBoard);
+			stepCounter = 0;
+			infoPanel.setInfoSteps(stepCounter);
+			coinCounter = new CoinCounter();
+			infoPanel.setInfoCoins(coinCounter.getCoins());
 			resetItem.setEnabled(true);
 			gamePanel.setBoard(currentBoard);
 			gamePanel.repaint();
@@ -102,8 +110,8 @@ public class MazeGUI extends JFrame {
 	private void resetGame() {
 		stepCounter = 0; 
 		infoPanel.setInfoSteps(stepCounter);
-		coinCounter = 0; 
-		infoPanel.setInfoCoins(coinCounter);
+		coinCounter.resetCoins(); 
+		infoPanel.setInfoCoins(coinCounter.getCoins());
 		if (originalBoard != null) {
 			currentBoard = originalBoard.clone();
 			engine = new GameEngine(currentBoard);
